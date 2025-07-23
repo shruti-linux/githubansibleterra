@@ -1,0 +1,43 @@
+---
+- name: Install and start NGINX on CentOS 9
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Ensure EPEL repo is installed (optional but common)
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install NGINX
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable NGINX service
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Create a sample index.html page
+      copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <html>
+          <head><title>NGINX on CentOS 9</title></head>
+          <body>
+            <h1>Hello from Ansible on CentOS 9! see</h1>
+          </body>
+          </html>
+        owner: root 
+        group: root
+        mode: '0644'
+
+    - name: Allow HTTP traffic in firewall (optional)
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
