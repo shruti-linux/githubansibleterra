@@ -1,21 +1,43 @@
-name: Run Ansible Playbook
+---
+- name: Install and start NGINX on CentOS 9
+  hosts: all
+  become: true
+  gather_facts: true
 
-on:
-  workflow_dispatch:
+  tasks:
+    - name: Ensure EPEL repo is installed (optional but common)
+      yum:
+        name: epel-release
+        state: present
 
-jobs:
-  run-ansible:
-    runs-on: [self-hosted]  # Or ubuntu-latest if not using SSH or localhost
+    - name: Install NGINX
+      yum:
+        name: nginx
+        state: present
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Start and enable NGINX service
+      systemd:
+        name: nginx
+        state: started
+        enabled: true
 
-      - name: Install Ansible (if not already installed)
-        run: |
-          sudo dnf install -y epel-release
-          sudo dnf install -y ansible
+    - name: Create a sample index.html page
+      copy:
+        dest: /usr/share/nginx/html/index.html
+        content: |
+          <html>
+          <head><title>NGINX on CentOS 9 see ur selg</title></head>
+          <body>
+            <h1>Hello from Ansible on CentOS 9!</h1>
+          </body>
+          </html>
+        owner: root
+        group: root
+        mode: '0644'
 
-      - name: Run Ansible Playbook
-        run: |
-          ansible-playbook ansible/playbooks/deploy.yml -i ansible/inventory
+    - name: Allow HTTP traffic in firewall (optional)
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
