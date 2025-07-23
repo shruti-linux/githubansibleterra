@@ -26,9 +26,9 @@
         dest: /usr/share/nginx/html/index.html
         content: |
           <html>
-          <head><title>NGINX on CentOS 9</title></head>
+          <head><title>NGINX on CentOS 9 good </title></head>
           <body>
-            <h1>Hello from Ansible on CentOS 9! see</h1>
+            <h1>Hello from Ansible on CentOS 9! good to  see</h1>
           </body>
           </html>
         owner: root 
