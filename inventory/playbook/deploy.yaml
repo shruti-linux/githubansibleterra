@@ -1,0 +1,21 @@
+name: Run Ansible Playbook
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-ansible:
+    runs-on: [self-hosted]  # Or ubuntu-latest if not using SSH or localhost
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Ansible (if not already installed)
+        run: |
+          sudo dnf install -y epel-release
+          sudo dnf install -y ansible
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook ansible/playbooks/deploy.yml -i ansible/inventory
